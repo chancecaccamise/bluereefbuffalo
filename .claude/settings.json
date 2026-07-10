@@ -6,7 +6,13 @@
       "Bash(echo \"started pid $!\")",
       "Bash(curl -s -o /dev/null http://localhost:3137/)",
       "Bash(curl -s http://localhost:3137/)",
-      "Bash(grep -oE '\\(first-name|last-name|phone-number|message|email\\)[^>]{0,120}')"
+      "Bash(grep -oE '\\(first-name|last-name|phone-number|message|email\\)[^>]{0,120}')",
+      "Bash(npm audit *)",
+      "Bash(grep -iA 15 'next')",
+      "Bash(grep -iB1 -A2 'next')",
+      "Bash(grep -vE '^\\\\s*$')",
+      "Bash(node -e ' *)",
+      "Bash(node -e 'let d=\"\";process.stdin.on\\(\"data\",c=>d+=c\\).on\\(\"end\",\\(\\)=>{const v=JSON.parse\\(d\\).vulnerabilities||{};Object.entries\\(v\\).filter\\(\\([k,x]\\)=>x.via.some\\(z=>typeof z===\"object\"\\)\\).forEach\\(\\([k,x]\\)=>console.log\\(x.severity,k,\"<-\",x.via.filter\\(z=>typeof z===\"object\"\\).map\\(z=>z.title\\).join\\(\"; \"\\).slice\\(0,70\\)\\)\\);console.log\\(\"next:\",v.next?.severity,\"via\",JSON.stringify\\(v.next?.via\\)\\);}')"
     ]
   }
 }
