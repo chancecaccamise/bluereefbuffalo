@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"TSC_EXIT=$?\")",
+      "Bash(PORT=3137 npm run start)",
+      "Bash(echo \"started pid $!\")",
+      "Bash(curl -s -o /dev/null http://localhost:3137/)",
+      "Bash(curl -s http://localhost:3137/)",
+      "Bash(grep -oE '\\(first-name|last-name|phone-number|message|email\\)[^>]{0,120}')"
+    ]
+  }
+}

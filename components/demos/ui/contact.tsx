@@ -1,11 +1,36 @@
 'use client';
 
 import { BuildingOffice2Icon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, ValidationError } from '@formspree/react';
+import { cn } from '@/lib/utils';
+
+const REQUIRED_FIELDS = ['first-name', 'last-name', 'email', 'phone-number', 'message'] as const;
+
+const fieldClassName = cn(
+  'block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900',
+  'outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-blue-600',
+  '[&:user-invalid]:outline-2 [&:user-invalid]:outline-red-500',
+);
 
 export default function Contact() {
   const [state, handleSubmit] = useForm("mrbpzgad");
+  const [clientError, setClientError] = useState<string | null>(null);
+
+  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    const data = new FormData(event.currentTarget);
+    const missing = REQUIRED_FIELDS.some((name) => {
+      const value = data.get(name);
+      return typeof value !== 'string' || value.trim().length === 0;
+    });
+    if (missing) {
+      event.preventDefault();
+      setClientError('Please fill in your name, email, phone, and message before sending.');
+      return;
+    }
+    setClientError(null);
+    handleSubmit(event);
+  }
 
   return (
     <div className="relative isolate bg-white">
@@ -63,7 +88,7 @@ export default function Contact() {
                 <p className="mt-2 text-lg text-gray-600">We will be in contact with you soon.</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={onSubmit}>
                 <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
                   <div>
                     <label htmlFor="first-name" className="block text-sm/6 font-semibold text-gray-900">
@@ -76,9 +101,11 @@ export default function Contact() {
                         type="text"
                         placeholder="David"
                         autoComplete="given-name"
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-blue-600"
+                        required
+                        className={fieldClassName}
                       />
                     </div>
+                    <ValidationError prefix="First name" field="first-name" errors={state.errors} className="mt-1 text-sm text-red-600" />
                   </div>
                   <div>
                     <label htmlFor="last-name" className="block text-sm/6 font-semibold text-gray-900">
@@ -91,9 +118,11 @@ export default function Contact() {
                         placeholder="Stanley"
                         type="text"
                         autoComplete="family-name"
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-blue-600"
+                        required
+                        className={fieldClassName}
                       />
                     </div>
+                    <ValidationError prefix="Last name" field="last-name" errors={state.errors} className="mt-1 text-sm text-red-600" />
                   </div>
                   <div className="sm:col-span-2">
                     <label htmlFor="email" className="block text-sm/6 font-semibold text-gray-900">
@@ -105,10 +134,11 @@ export default function Contact() {
                         type="email"
                         name="email"
                         placeholder="David@bluereefbuffalo.com"
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-blue-600"
+                        required
+                        className={fieldClassName}
                       />
                     </div>
-                    <ValidationError prefix="Email" field="email" errors={state.errors} />
+                    <ValidationError prefix="Email" field="email" errors={state.errors} className="mt-1 text-sm text-red-600" />
                   </div>
                   <div className="sm:col-span-2">
                     <label htmlFor="phone-number" className="block text-sm/6 font-semibold text-gray-900">
@@ -121,9 +151,11 @@ export default function Contact() {
                         placeholder="(716) 771-9033"
                         type="tel"
                         autoComplete="tel"
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-blue-600"
+                        required
+                        className={fieldClassName}
                       />
                     </div>
+                    <ValidationError prefix="Phone" field="phone-number" errors={state.errors} className="mt-1 text-sm text-red-600" />
                   </div>
                   <div className="sm:col-span-2">
                     <label htmlFor="message" className="block text-sm/6 font-semibold text-gray-900">
@@ -135,12 +167,23 @@ export default function Contact() {
                         name="message"
                         placeholder="Write your message here..."
                         rows={4}
-                        className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-blue-600"
+                        required
+                        className={fieldClassName}
                       />
                     </div>
-                    <ValidationError prefix="Message" field="message" errors={state.errors} />
+                    <ValidationError prefix="Message" field="message" errors={state.errors} className="mt-1 text-sm text-red-600" />
                   </div>
                 </div>
+                {(clientError || state.errors) && (
+                  <div
+                    role="alert"
+                    className="mt-6 rounded-md bg-red-50 p-4 text-sm text-red-700 outline outline-1 outline-red-200"
+                  >
+                    {clientError ??
+                      "Sorry, your message couldn't be sent. Please try again, or email us directly at David@bluereefbuffalo.com."}
+                    <ValidationError errors={state.errors} className="mt-1 text-red-700" />
+                  </div>
+                )}
                 <div className="mt-8 flex justify-end">
                   <button
                     type="submit"
